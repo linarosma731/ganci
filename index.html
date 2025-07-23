@@ -277,17 +277,7 @@
                     <option value="kustom">Kustom (misal: bentuk kunci, hewan)</option>
                 </select>
             </div>
-            <div class="form-group">
-                <label for="material">Material Gantungan Kunci:</label>
-                <select id="material">
-                    <option value="akrilik">Akrilik</option>
-                    <option value="metal">Metal</option>
-                    <option value="kayu">Kayu</option>
-                    <option value="resin">Resin</option>
-                    <option value="karet/silikon">Karet/Silikon</option>
-                    <option value="kulit">Kulit</option>
-                </select>
-            </div>
+            <!-- Removed Material Gantungan Kunci -->
         </div>
 
         <div class="grid-cols-2">
@@ -825,10 +815,10 @@
 
         // Keychain Front elements
         const bentukSelect = document.getElementById('bentuk') || { value: '' };
-        const materialSelect = document.getElementById('material') || { value: '' }; // NEW: Material Select
+        // const materialSelect = document.getElementById('material') || { value: '' }; // Removed: Material Select
         const temaSelect = document.getElementById('tema') || { value: '' };
-        const warnaSelect = document.getElementById('warnaSelect') || { value: '' };
-        const elemenGrafisSelect = document.getElementById('elemenGrafisSelect') || { options: [] };
+        let warnaSelect = document.getElementById('warnaSelect') || { value: '' };
+        let elemenGrafisSelect = document.getElementById('elemenGrafisSelect') || { options: [] };
         const teksInput = document.getElementById('teks') || { value: '' };
         const fontSelect = document.getElementById('fontSelect') || { value: '' };
         const efekSelect = document.getElementById('efek') || { value: '' };
@@ -836,9 +826,9 @@
 
         // Keychain Back elements
         const temaBelakangSelect = document.getElementById('temaBelakang') || { value: '' };
-        const warnaBelakangSelect = document.getElementById('warnaBelakangSelect') || { value: '' };
-        const elemenGrafisBelakangSelect = document.getElementById('elemenGrafisBelakangSelect') || { options: [] };
-        const teksBelakangInput = document.getElementById('teksBelakang') || { value: '' };
+        let warnaBelakangSelect = document.getElementById('warnaBelakangSelect') || { value: '' };
+        let elemenGrafisBelakangSelect = document.getElementById('elemenGrafisBelakangSelect') || { options: [] };
+        let teksBelakangInput = document.getElementById('teksBelakang') || { value: '' };
         const fontBelakangSelect = document.getElementById('fontBelakangSelect') || null; // Changed to null for explicit check
         const efekBelakangSelect = document.getElementById('efekBelakangSelect') || null; // Changed to null for explicit check
 
@@ -846,15 +836,15 @@
         // Packaging Front elements
         const bentukKemasanSelect = document.getElementById('bentukKemasan') || { value: '' };
         const temaKemasanSelect = document.getElementById('temaKemasan') || { value: '' };
-        const warnaKemasanSelect = document.getElementById('warnaKemasanSelect') || { value: '' };
-        const elemenGrafisKemasanSelect = document.getElementById('elemenGrafisKemasanSelect') || { options: [] };
-        const teksKemasanInput = document.getElementById('teksKemasan') || { value: '' };
+        let warnaKemasanSelect = document.getElementById('warnaKemasanSelect') || { value: '' };
+        let elemenGrafisKemasanSelect = document.getElementById('elemenGrafisKemasanSelect') || { options: [] };
+        let teksKemasanInput = document.getElementById('teksKemasan') || { value: '' };
         const ukuranKemasanInput = document.getElementById('ukuranKemasan') || { value: '' };
 
         // Packaging Back elements
-        const warnaKemasanBelakangSelect = document.getElementById('warnaKemasanBelakangSelect') || { value: '' };
-        const elemenGrafisKemasanBelakangSelect = document.getElementById('elemenGrafisKemasanBelakangSelect') || { options: [] };
-        const teksKemasanBelakangInput = document.getElementById('teksKemasanBelakang') || { value: '' };
+        let warnaKemasanBelakangSelect = document.getElementById('warnaKemasanBelakangSelect') || { value: '' };
+        let elemenGrafisKemasanBelakangSelect = document.getElementById('elemenGrafisKemasanBelakangSelect') || { options: [] };
+        let teksKemasanBelakangInput = document.getElementById('teksKemasanBelakang') || { value: '' };
 
 
         const generatePromptBtn = document.getElementById('generatePromptBtn');
@@ -926,7 +916,7 @@
             
             // Keychain Front Design Inputs
             const bentuk = bentukSelect.value;
-            const material = materialSelect.value; // NEW: Material
+            // const material = materialSelect.value; // Removed: Material
             const tema = temaSelect.value;
             let warna = warnaSelect.value;
             let elemenGrafis = getSelectedValues(elemenGrafisSelect).join(', ');
@@ -1312,7 +1302,8 @@
 
 
             // --- Final prompt construction ---
-            let keychainFrontPrompt = `Buat desain ilustrasi untuk gantungan kunci ${bentuk} berbahan ${material} (Sisi Depan). `;
+            // Removed 'berbahan ${material}' from prompt
+            let keychainFrontPrompt = `Buat desain ilustrasi untuk gantungan kunci ${bentuk} (Sisi Depan). `;
             keychainFrontPrompt += `Fokus hanya pada ilustrasi desain utama. **Jangan sertakan** ring gantungan kunci, rantai, atau bagian fisik gantungan kunci lainnya. Pastikan latar belakang polos atau minimalis untuk menonjolkan desain. `;
             keychainFrontPrompt += `Dengan tema ${tema}. `;
             if (stylisticModifier) {
@@ -1321,7 +1312,8 @@
             keychainFrontPrompt += `Warna dominan ${warna || 'sesuai tema'}. Sertakan ${elemenGrafis || 'elemen grafis yang relevan'} dan teks '${teks || 'teks motivasi'}' dengan font ${font}. `;
             keychainFrontPrompt += `Tambahkan efek ${efek} untuk memberikan suasana ${suasana}.`;
 
-            let keychainBackPrompt = `Buat desain ilustrasi untuk gantungan kunci ${bentuk} berbahan ${material} (Sisi Belakang). `;
+            // Removed 'berbahan ${material}' from prompt
+            let keychainBackPrompt = `Buat desain ilustrasi untuk gantungan kunci ${bentuk} (Sisi Belakang). `;
             keychainBackPrompt += `Fokus hanya pada ilustrasi desain utama. **Jangan sertakan** ring gantungan kunci, rantai, atau bagian fisik gantungan kunci lainnya. Pastikan latar belakang polos atau minimalis untuk menonjolkan desain. `;
             keychainBackPrompt += `Tema/gaya ${temaBelakang || 'sesuai sisi depan'}. `;
             keychainBackPrompt += `Warna dominan ${warnaBelakang || 'sesuai sisi depan'}. `;
@@ -1486,7 +1478,7 @@
                         jenisKelamin: jenisKelaminSelect.value,
                         keperluan: keperluanSelect.value,
                         bentuk: bentukSelect.value,
-                        material: materialSelect.value,
+                        // material: materialSelect.value, // Removed from inputs
                         tema: temaSelect.value,
                         warna: warnaSelect.value,
                         elemenGrafis: getSelectedValues(elemenGrafisSelect),
@@ -1535,7 +1527,7 @@
             keperluanSelect.value = promptData.inputs.keperluan || '';
 
             bentukSelect.value = promptData.inputs.bentuk || '';
-            materialSelect.value = promptData.inputs.material || ''; // Load material
+            // materialSelect.value = promptData.inputs.material || ''; // Removed: Load material
             temaSelect.value = promptData.inputs.tema || '';
             warnaSelect.value = promptData.inputs.warna || '';
             setSelectedValues(elemenGrafisSelect, promptData.inputs.elemenGrafis || []);
@@ -1651,7 +1643,7 @@
 
         // Keychain Front fields
         if (bentukSelect) bentukSelect.addEventListener('change', generatePrompt);
-        if (materialSelect) materialSelect.addEventListener('change', generatePrompt); // NEW: Material
+        // if (materialSelect) materialSelect.addEventListener('change', generatePrompt); // Removed: Material
         if (temaSelect) temaSelect.addEventListener('change', generatePrompt);
         if (warnaSelect) warnaSelect.addEventListener('change', generatePrompt);
         if (elemenGrafisSelect) elemenGrafisSelect.addEventListener('change', generatePrompt);
@@ -1683,4 +1675,4 @@
         if (teksKemasanBelakangInput) teksKemasanBelakangInput.addEventListener('input', generatePrompt);
     </script>
 </body>
-</html>s
+</html>
