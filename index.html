@@ -1,0 +1,1686 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator Prompt Desain Gantungan Kunci & Kemasan</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            max-width: 900px; /* Increased max-width for more content */
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+            display: block;
+        }
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.2s;
+            box-sizing: border-box; /* Ensure padding doesn't increase width */
+        }
+        /* Style for multi-select dropdown */
+        select[multiple] {
+            height: auto; /* Allow height to adjust based on options */
+            min-height: 120px; /* Minimum height to show multiple options */
+        }
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #6366f1; /* Indigo-500 */
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+        button {
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-primary {
+            background-color: #6366f1; /* Indigo-500 */
+            color: white;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #4f46e5; /* Indigo-600 */
+            transform: translateY(-1px);
+        }
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+        .btn-secondary {
+            background-color: #e0e7ff; /* Indigo-100 */
+            color: #4f46e5; /* Indigo-600 */
+            border: 1px solid #a5b4fc; /* Indigo-300 */
+        }
+        .btn-secondary:hover {
+            background-color: #c7d2fe; /* Indigo-200 */
+            transform: translateY(-1px);
+        }
+        .btn-secondary:active {
+            transform: translateY(0);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .grid-cols-2 {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        @media (min-width: 640px) { /* Small screens and up */
+            .grid-cols-2 {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        .loading-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #fff;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .section-divider {
+            border-top: 2px solid #e2e8f0;
+            margin-top: 30px;
+            padding-top: 20px;
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #4f46e5;
+        }
+        .image-preview-container {
+            margin-top: 20px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            background-color: #f9fafb;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .image-preview-container img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .image-preview-container .message {
+            color: #666;
+            font-style: italic;
+        }
+        .history-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e2e8f0;
+        }
+        .history-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background-color: #f9fafb;
+            padding: 10px;
+        }
+        .history-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            word-break: break-all; /* Ensure long text wraps */
+        }
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        .history-item:hover {
+            background-color: #e0e7ff;
+        }
+        .history-item-date {
+            font-size: 0.8em;
+            color: #888;
+            margin-top: 5px;
+        }
+        .modal {
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            position: absolute;
+            top: 10px;
+            right: 20px;
+        }
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-3xl font-bold text-center text-indigo-700 mb-6">Generator Prompt Desain Gantungan Kunci & Kemasan</h1>
+
+        <div class="grid-cols-2">
+            <div class="form-group">
+                <label for="nama">Nama (Opsional, untuk teks):</label>
+                <input type="text" id="nama" placeholder="Contoh: Dinda">
+            </div>
+            <div class="form-group">
+                <label for="usia">Usia (Opsional, untuk menyesuaikan tema):</label>
+                <input type="number" id="usia" placeholder="Contoh: 25">
+            </div>
+        </div>
+
+        <div class="grid-cols-2">
+            <div class="form-group">
+                <label for="jenisKelamin">Jenis Kelamin (Opsional):</label>
+                <select id="jenisKelamin">
+                    <option value="">Pilih</option>
+                    <option value="laki-laki">Laki-laki</option>
+                    <option value="perempuan">Perempuan</option>
+                    <option value="netral">Netral/Unisex</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="keperluan">Keperluan (Opsional):</label>
+                <select id="keperluan">
+                    <option value="">Pilih</option>
+                    <option value="ulang tahun">Ulang Tahun</option>
+                    <option value="hadiah">Hadiah Umum</option>
+                    <option value="pribadi">Penggunaan Pribadi</option>
+                    <option value="promosi">Promosi/Bisnis</option>
+                    <option value="acara khusus">Acara Khusus (misal: pernikahan, wisuda)</option>
+                    <option value="koleksi">Koleksi</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="section-divider">Desain Gantungan Kunci (Sisi Depan)</div>
+
+        <div class="grid-cols-2">
+            <div class="form-group">
+                <label for="bentuk">Bentuk Desain Gantungan Kunci:</label>
+                <select id="bentuk">
+                    <option value="lingkaran">Lingkaran</option>
+                    <option value="persegi">Persegi</option>
+                    <option value="hati">Hati</option>
+                    <option value="bintang">Bintang</option>
+                    <option value="oval" selected>Oval</option>
+                    <option value="kustom">Kustom (misal: bentuk kunci, hewan)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="material">Material Gantungan Kunci:</label>
+                <select id="material">
+                    <option value="akrilik">Akrilik</option>
+                    <option value="metal">Metal</option>
+                    <option value="kayu">Kayu</option>
+                    <option value="resin">Resin</option>
+                    <option value="karet/silikon">Karet/Silikon</option>
+                    <option value="kulit">Kulit</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="grid-cols-2">
+            <div class="form-group">
+                <label for="tema">Tema/Gaya Gantungan Kunci:</label>
+                <select id="tema">
+                    <option value="ilustrasi cat air">Ilustrasi Cat Air</option>
+                    <option value="kartun">Kartun</option>
+                    <option value="vintage">Vintage</option>
+                    <option value="minimalis">Minimalis</option>
+                    <option value="modern">Modern</option>
+                    <option value="sketsa">Sketsa</option>
+                    <option value="3D">3D</option>
+                    <option value="isometrik">Isometrik</option>
+                    <option value="fantasi">Fantasi</option>
+                    <option value="ulang tahun">Ulang Tahun</option>
+                    <option value="hobi">Hobi/Minat</option>
+                    <option value="profesi">Profesi</option>
+                    <option value="alam">Alam/Pemandangan</option>
+                    <option value="hewan">Hewan Peliharaan</option>
+                    <option value="abstrak">Abstrak</option>
+                    <option value="geometris">Geometris</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="warnaSelect">Warna Dominan Gantungan Kunci (Sisi Depan):</label>
+                <select id="warnaSelect">
+                    <option value="">Pilih Warna</option>
+                    <option value="merah">Merah</option>
+                    <option value="biru">Biru</option>
+                    <option value="hijau">Hijau</option>
+                    <option value="kuning">Kuning</option>
+                    <option value="pink pastel">Pink Pastel</option>
+                    <option value="ungu">Ungu</option>
+                    <option value="emas">Emas</option>
+                    <option value="silver">Silver</option>
+                    <option value="hitam">Hitam</option>
+                    <option value="putih">Putih</option>
+                    <option value="abu-abu">Abu-abu</option>
+                    <option value="coklat">Coklat</option>
+                    <option value="oranye">Oranye</option>
+                    <option value="gradasi cerah">Gradasi Cerah</option>
+                    <option value="gradasi gelap">Gradasi Gelap</option>
+                    <option value="palet ceria">Palet Ceria</option>
+                    <option value="palet lembut">Palet Lembut</option>
+                    <option value="palet profesional">Palet Profesional</option>
+                    <option value="warna alami">Warna Alami (earthy tones)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="grid-cols-2">
+            <div class="form-group">
+                <label for="elemenGrafisSelect">Elemen Grafis/Ilustrasi Gantungan Kunci (Sisi Depan - Pilih beberapa dengan Ctrl/Cmd + klik):</label>
+                <select id="elemenGrafisSelect" multiple size="7">
+                    <option value="">Pilih Elemen</option>
+                    <optgroup label="Umum">
+                        <option value="bunga">Bunga</option>
+                        <option value="hati">Hati</option>
+                        <option value="bintang">Bintang</option>
+                        <option value="awan">Awan</option>
+                        <option value="geometris">Bentuk Geometris</option>
+                        <option value="abstrak">Pola Abstrak</option>
+                        <option value="pita">Pita</option>
+                        <option value="mahkota">Mahkota</option>
+                        <option value="simbol persahabatan">Simbol Persahabatan</option>
+                        <option value="kutipan inspiratif">Kutipan Inspiratif</option>
+                        <option value="inisial nama">Inisial Nama</option>
+                    </optgroup>
+                    <optgroup label="Karakter Orang">
+                        <option value="karakter anak perempuan berhijab">Karakter Anak Perempuan Berhijab</option>
+                        <option value="karakter anak laki-laki berpeci">Karakter Anak Laki-laki Berpeci</option>
+                        <option value="karakter perempuan berhijab">Karakter Perempuan Berhijab</option>
+                        <option value="karakter laki-laki berpeci">Karakter Laki-laki Berpeci</option>
+                        <option value="karakter anak perempuan">Karakter Anak Perempuan</option>
+                        <option value="karakter anak laki-laki">Karakter Anak Laki-laki</option>
+                        <option value="karakter perempuan">Karakter Perempuan</option>
+                        <option value="karakter laki-laki">Karakter Laki-laki</option>
+                    </optgroup>
+                    <optgroup label="Ulang Tahun">
+                        <option value="kue ulang tahun">Kue Ulang Tahun</option>
+                        <option value="lilin">Lilin</option>
+                        <option value="balon">Balon</option>
+                        <option value="kado">Kado</option>
+                        <option value="konfeti">Konfeti</option>
+                        <option value="karakter kartun lucu">Karakter Kartun Lucu</option>
+                    </optgroup>
+                    <optgroup label="Hobi/Minat">
+                        <option value="ikon musik">Ikon Musik (gitar, not)</option>
+                        <option value="ikon game">Ikon Game (controller, pixel art)</option>
+                        <option value="ikon buku">Ikon Buku</option>
+                        <option value="ikon kamera">Ikon Kamera</option>
+                        <option value="ikon olahraga">Ikon Olahraga</option>
+                        <option value="ikon seni">Ikon Seni (kuas, palet)</option>
+                    </optgroup>
+                    <optgroup label="Profesi">
+                        <option value="ikon stetoskop">Ikon Stetoskop (Medis)</option>
+                        <option value="ikon laptop">Ikon Laptop (IT/Kantor)</option>
+                        <option value="ikon palu">Ikon Palu (Hukum/Konstruksi)</option>
+                        <option value="ikon alat masak">Ikon Alat Masak (Kuliner)</option>
+                    </optgroup>
+                    <optgroup label="Alam/Hewan">
+                        <option value="pohon">Pohon</option>
+                        <option value="gunung">Gunung</option>
+                        <option value="pantai">Pantai</option>
+                        <option value="ilustrasi hewan peliharaan">Ilustrasi Hewan Peliharaan</option>
+                        <option value="jejak kaki hewan">Jejak Kaki Hewan</option>
+                    </optgroup>
+                    <optgroup label="Kendaraan">
+                        <option value="mobil">Mobil</option>
+                        <option value="motor">Motor</option>
+                        <option value="pesawat">Pesawat</option>
+                    </optgroup>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="teks">Teks yang Diinginkan pada Gantungan Kunci (Sisi Depan):</label>
+                <input type="text" id="teks" placeholder="Contoh: Explore the Universe, Selamat Ulang Tahun Dinda">
+            </div>
+        </div>
+
+        <div class="grid-cols-2">
+            <div class="form-group">
+                <label for="fontSelect">Jenis Font Gantungan Kunci (Sisi Depan):</label>
+                <select id="fontSelect">
+                    <option value="sans-serif">Sans-serif (Modern, Bersih)</option>
+                    <option value="serif">Serif (Klasik, Formal)</option>
+                    <option value="script">Script (Elegan, Tulisan Tangan)</option>
+                    <option value="display">Display (Unik, Mencolok)</option>
+                    <option value="handwritten">Handwritten (Kasual, Personal)</option>
+                    <option value="monospace">Monospace (Teknis, Retro)</option>
+                    <option value="gothic">Gothic (Tebal, Dramatis)</option>
+                    <option value="vintage">Vintage (Retro, Klasik)</option>
+                    <option value="futuristic">Futuristic (Modern, Sci-Fi)</option>
+                    <option value="minimalist">Minimalist (Sederhana, Bersih)</option>
+                    <option value="playful">Playful (Ceria, Menyenangkan)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="efek">Efek Tambahan Gantungan Kunci (Sisi Depan):</label>
+                <select id="efek">
+                    <option value="glossy">Glossy</option>
+                    <option value="matte">Matte</option>
+                    <option value="metalik">Metalik</option>
+                    <option value="transparan">Transparan</option>
+                    <option value="3D">3D</option>
+                    <option value="timbul">Timbul</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="suasana">Suasana Gantungan Kunci (Sisi Depan):</label>
+            <select id="suasana">
+                <option value="tenang">Tenang</option>
+                <option value="ceria">Ceria</option>
+                <option value="klasik">Klasik</option>
+                <option value="modern">Modern</option>
+                <option value="mewah">Mewah</option>
+                <option value="bersemangat">Bersemangat</option>
+                <option value="lucu">Lucu</option>
+                <option value="profesional">Profesional</option>
+                <option value="artistik">Artistik</option>
+                <option value="misterius">Misterius</option>
+                <option value="futuristik">Futuristik</option>
+            </select>
+        </div>
+
+        <div class="section-divider">Desain Gantungan Kunci (Sisi Belakang)</div>
+
+        <div class="grid-cols-2">
+            <div class="form-group">
+                <label for="temaBelakang">Tema/Gaya Gantungan Kunci (Sisi Belakang):</label>
+                <select id="temaBelakang">
+                    <option value="">Sesuai Sisi Depan</option>
+                    <option value="minimalis">Minimalis</option>
+                    <option value="pola">Pola</option>
+                    <option value="teks saja">Teks Saja</option>
+                    <option value="abstrak">Abstrak</option>
+                    <option value="detail kecil">Detail Kecil</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="warnaBelakangSelect">Warna Dominan Gantungan Kunci (Sisi Belakang):</label>
+                <select id="warnaBelakangSelect">
+                    <option value="">Sesuai Sisi Depan</option>
+                    <option value="merah">Merah</option>
+                    <option value="biru">Biru</option>
+                    <option value="hijau">Hijau</option>
+                    <option value="kuning">Kuning</option>
+                    <option value="pink pastel">Pink Pastel</option>
+                    <option value="ungu">Ungu</option>
+                    <option value="emas">Emas</option>
+                    <option value="silver">Silver</option>
+                    <option value="hitam">Hitam</option>
+                    <option value="putih">Putih</option>
+                    <option value="abu-abu">Abu-abu</option>
+                    <option value="coklat">Coklat</option>
+                    <option value="oranye">Oranye</option>
+                    <option value="gradasi cerah">Gradasi Cerah</option>
+                    <option value="gradasi gelap">Gradasi Gelap</option>
+                    <option value="palet ceria">Palet Ceria</option>
+                    <option value="palet lembut">Palet Lembut</option>
+                    <option value="palet profesional">Palet Profesional</option>
+                    <option value="warna alami">Warna Alami (earthy tones)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="grid-cols-2">
+            <div class="form-group">
+                <label for="elemenGrafisBelakangSelect">Elemen Grafis/Ilustrasi Gantungan Kunci (Sisi Belakang - Pilih beberapa):</label>
+                <select id="elemenGrafisBelakangSelect" multiple size="7">
+                    <option value="">Sesuai Sisi Depan</option>
+                    <optgroup label="Umum">
+                        <option value="pola minimalis">Pola Minimalis</option>
+                        <option value="tekstur">Tekstur</option>
+                        <option value="garis sederhana">Garis Sederhana</option>
+                        <option value="ikon kecil">Ikon Kecil</option>
+                    </optgroup>
+                    <optgroup label="Teks/Informasi">
+                        <option value="informasi kontak">Informasi Kontak</option>
+                        <option value="slogan brand">Slogan Brand</option>
+                        <option value="kutipan singkat">Kutipan Singkat</option>
+                        <option value="tanggal penting">Tanggal Penting</option>
+                        <option value="inisial">Inisial</option>
+                    </optgroup>
+                    <optgroup label="Pelengkap Depan">
+                        <option value="elemen pelengkap desain depan">Elemen Pelengkap Desain Depan</option>
+                        <option value="lanjutan ilustrasi depan">Lanjutan Ilustrasi Depan</option>
+                    </optgroup>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="teksBelakang">Teks yang Diinginkan pada Gantungan Kunci (Sisi Belakang):</label>
+                <input type="text" id="teksBelakang" placeholder="Contoh: Tanggal: 12.12.2024, Love You!">
+            </div>
+        </div>
+
+        <div class="grid-cols-2">
+            <div class="form-group">
+                <label for="fontBelakangSelect">Jenis Font Gantungan Kunci (Sisi Belakang):</label>
+                <select id="fontBelakangSelect">
+                    <option value="">Sesuai Sisi Depan</option>
+                    <option value="sans-serif">Sans-serif (Modern, Bersih)</option>
+                    <option value="serif">Serif (Klasik, Formal)</option>
+                    <option value="script">Script (Elegan, Tulisan Tangan)</option>
+                    <option value="display">Display (Unik, Mencolok)</option>
+                    <option value="handwritten">Handwritten (Kasual, Personal)</option>
+                    <option value="monospace">Monospace (Teknis, Retro)</option>
+                    <option value="gothic">Gothic (Tebal, Dramatis)</option>
+                    <option value="vintage">Vintage (Retro, Klasik)</option>
+                    <option value="futuristic">Futuristic (Modern, Sci-Fi)</option>
+                    <option value="minimalist">Minimalist (Sederhana, Bersih)</option>
+                    <option value="playful">Playful (Ceria, Menyenangkan)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="efekBelakang">Efek Tambahan Gantungan Kunci (Sisi Belakang):</label>
+                <select id="efekBelakang">
+                    <option value="">Sesuai Sisi Depan</option>
+                    <option value="glossy">Glossy</option>
+                    <option value="matte">Matte</option>
+                    <option value="metalik">Metalik</option>
+                    <option value="transparan">Transparan</option>
+                    <option value="3D">3D</option>
+                    <option value="timbul">Timbul</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="section-divider">Desain Kemasan Kartu (Sisi Depan)</div>
+
+        <div class="grid-cols-2">
+            <div class="form-group">
+                <label for="bentukKemasan">Bentuk Kemasan:</label>
+                <select id="bentukKemasan">
+                    <option value="persegi panjang">Persegi Panjang</option>
+                    <option value="persegi">Persegi</option>
+                    <option value="oval">Oval</option>
+                    <option value="lingkaran">Lingkaran</option>
+                    <option value="kustom">Kustom</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="temaKemasan">Tema/Gaya Kemasan:</label>
+                <select id="temaKemasan">
+                    <option value="">Sesuai Gantungan Kunci</option>
+                    <option value="minimalis">Minimalis</option>
+                    <option value="elegan">Elegan</option>
+                    <option value="ceria">Ceria</option>
+                    <option value="vintage">Vintage</option>
+                    <option value="modern">Modern</option>
+                    <option value="ilustrasi cat air">Ilustrasi Cat Air</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="grid-cols-2">
+            <div class="form-group">
+                <label for="warnaKemasanSelect">Warna Dominan Kemasan:</label>
+                <select id="warnaKemasanSelect">
+                    <option value="">Sesuai Gantungan Kunci</option>
+                    <option value="merah">Merah</option>
+                    <option value="biru">Biru</option>
+                    <option value="hijau">Hijau</option>
+                    <option value="kuning">Kuning</option>
+                    <option value="pink pastel">Pink Pastel</option>
+                    <option value="ungu">Ungu</option>
+                    <option value="emas">Emas</option>
+                    <option value="silver">Silver</option>
+                    <option value="hitam">Hitam</option>
+                    <option value="putih">Putih</option>
+                    <option value="abu-abu">Abu-abu</option>
+                    <option value="coklat">Coklat</option>
+                    <option value="oranye">Oranye</option>
+                    <option value="gradasi cerah">Gradasi Cerah</option>
+                    <option value="gradasi gelap">Gradasi Gelap</option>
+                    <option value="palet ceria">Palet Ceria</option>
+                    <option value="palet lembut">Palet Lembut</option>
+                    <option value="palet profesional">Palet Profesional</option>
+                    <option value="warna alami">Warna Alami (earthy tones)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="elemenGrafisKemasanSelect">Elemen Grafis/Ilustrasi Kemasan (Pilih beberapa):</label>
+                <select id="elemenGrafisKemasanSelect" multiple size="7">
+                    <option value="">Sesuai Gantungan Kunci</option>
+                    <optgroup label="Umum">
+                        <option value="pola abstrak">Pola Abstrak</option>
+                        <option value="garis minimalis">Garis Minimalis</option>
+                        <option value="ikon hadiah">Ikon Hadiah</option>
+                        <option value="logo brand">Logo Brand (placeholder)</option>
+                        <option value="tekstur kertas">Tekstur Kertas</option>
+                        <option value="ilustrasi bunga kecil">Ilustrasi Bunga Kecil</option>
+                        <option value="ikon hati kecil">Ikon Hati Kecil</option>
+                    </optgroup>
+                    <optgroup label="Terkait Gantungan Kunci">
+                        <option value="elemen desain gantungan kunci">Elemen Desain Gantungan Kunci</option>
+                        <option value="gaya ilustrasi gantungan kunci">Gaya Ilustrasi Gantungan Kunci</option>
+                    </optgroup>
+                    <optgroup label="Acara Khusus">
+                        <option value="ikon ulang tahun">Ikon Ulang Tahun</option>
+                        <option value="ikon pernikahan">Ikon Pernikahan</option>
+                        <option value="ikon wisuda">Ikon Wisuda</option>
+                    </optgroup>
+                </select>
+            </div>
+        </div>
+
+        <div class="grid-cols-2">
+            <div class="form-group">
+                <label for="teksKemasan">Teks yang Diinginkan pada Kemasan (Sisi Depan):</label>
+                <input type="text" id="teksKemasan" placeholder="Contoh: Dari: [Pengirim], Untuk: [Penerima], Terima Kasih!">
+            </div>
+            <div class="form-group">
+                <label for="ukuranKemasan">Ukuran Kemasan (Opsional):</label>
+                <input type="text" id="ukuranKemasan" placeholder="Contoh: 10x7 cm, A7">
+            </div>
+        </div>
+
+        <div class="section-divider">Desain Kemasan Kartu (Sisi Belakang)</div>
+
+        <div class="grid-cols-2">
+            <div class="form-group">
+                <label for="warnaKemasanBelakangSelect">Warna Dominan Kemasan (Sisi Belakang):</label>
+                <select id="warnaKemasanBelakangSelect">
+                    <option value="">Sesuai Sisi Depan</option>
+                    <option value="merah">Merah</option>
+                    <option value="biru">Biru</option>
+                    <option value="hijau">Hijau</option>
+                    <option value="kuning">Kuning</option>
+                    <option value="pink pastel">Pink Pastel</option>
+                    <option value="ungu">Ungu</option>
+                    <option value="emas">Emas</option>
+                    <option value="silver">Silver</option>
+                    <option value="hitam">Hitam</option>
+                    <option value="putih">Putih</option>
+                    <option value="abu-abu">Abu-abu</option>
+                    <option value="coklat">Coklat</option>
+                    <option value="oranye">Oranye</option>
+                    <option value="gradasi cerah">Gradasi Cerah</option>
+                    <option value="gradasi gelap">Gradasi Gelap</option>
+                    <option value="palet ceria">Palet Ceria</option>
+                    <option value="palet lembut">Palet Lembut</option>
+                    <option value="palet profesional">Palet Profesional</option>
+                    <option value="warna alami">Warna Alami (earthy tones)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="elemenGrafisKemasanBelakangSelect">Elemen Grafis/Ilustrasi Kemasan (Sisi Belakang - Pilih beberapa):</label>
+                <select id="elemenGrafisKemasanBelakangSelect" multiple size="7">
+                    <option value="">Sesuai Sisi Depan</option>
+                    <optgroup label="Informasi Kontak">
+                        <option value="ikon telepon">Ikon Telepon</option>
+                        <option value="ikon email">Ikon Email</option>
+                        <option value="ikon website">Ikon Website</option>
+                        <option value="ikon media sosial">Ikon Media Sosial</option>
+                        <option value="kode QR">Kode QR</option>
+                    </optgroup>
+                    <optgroup label="Pesan Tambahan">
+                        <option value="terima kasih">Terima Kasih</option>
+                        <option value="instruksi perawatan">Instruksi Perawatan</option>
+                        <option value="slogan brand">Slogan Brand</option>
+                        <option value="kutipan singkat">Kutipan Singkat</option>
+                    </optgroup>
+                    <optgroup label="Desain Pelengkap">
+                        <option value="pola latar belakang minimalis">Pola Latar Belakang Minimalis</option>
+                        <option value="elemen kecil sesuai tema">Elemen Kecil Sesuai Tema</option>
+                    </optgroup>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="teksKemasanBelakang">Teks yang Diinginkan pada Kemasan (Sisi Belakang):</label>
+            <input type="text" id="teksKemasanBelakang" placeholder="Contoh: Kunjungi website kami di..., Follow kami di...">
+        </div>
+
+
+        <button id="generatePromptBtn" class="btn-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
+            </svg>
+            Generate Prompt
+        </button>
+
+        <!-- Image Preview Section -->
+        <div class="image-preview-container" id="imagePreviewContainer">
+            <p class="message" id="imagePreviewMessage">Gambar pratinjau akan muncul di sini.</p>
+            <img id="generatedImage" src="" alt="Generated Image" class="hidden">
+            <div id="imageLoadingSpinner" class="loading-spinner hidden mt-4"></div>
+        </div>
+        <button id="generateImageBtn" class="btn-primary mt-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-4 4 4 4-4V5h-2a1 1 0 100 2h2v6.586l-2.293-2.293a1 1 0 00-1.414 0L9 13.586l-1.293-1.293a1 1 0 00-1.414 0L4 14.586V5h12v10z" clip-rule="evenodd" />
+            </svg>
+            Pratinjau Gambar
+        </button>
+
+        <div class="form-group mt-4">
+            <label for="generatedPrompt">Prompt yang Dihasilkan:</label>
+            <textarea id="generatedPrompt" rows="10" readonly class="bg-gray-50"></textarea>
+            <div class="flex flex-col sm:flex-row gap-2 mt-2">
+                <button id="copyPromptBtn" class="btn-secondary flex-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+                        <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
+                    </svg>
+                    Salin Prompt
+                </button>
+                <button id="translatePromptBtn" class="btn-secondary flex-1">
+                    <span id="translateButtonText">Terjemahkan ke Inggris</span>
+                    <div id="translateLoadingSpinner" class="loading-spinner hidden"></div>
+                </button>
+            </div>
+            <div id="copyMessage" class="text-sm text-green-600 mt-2 hidden">Prompt berhasil disalin!</div>
+            <div id="translateMessage" class="text-sm text-blue-600 mt-2 hidden">Menerjemahkan...</div>
+        </div>
+
+        <!-- History Section -->
+        <div class="history-section">
+            <h2 class="text-xl font-bold text-indigo-700 mb-4 text-center">Riwayat Prompt</h2>
+            <button id="savePromptBtn" class="btn-primary mb-4 w-full">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
+                </svg>
+                Simpan Prompt
+            </button>
+            <div id="saveMessage" class="text-sm text-green-600 mt-2 hidden text-center">Prompt berhasil disimpan!</div>
+            <div id="historyList" class="history-list">
+                <p class="text-center text-gray-500">Memuat riwayat...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for displaying full prompt history -->
+    <div id="historyModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-button" id="closeHistoryModal">&times;</span>
+            <h2 class="text-xl font-bold text-indigo-700 mb-4 text-center">Riwayat Prompt Tersimpan</h2>
+            <div id="modalHistoryList" class="history-list max-h-96">
+                <!-- History items will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Firebase imports - MANDATORY for Canvas apps, even if not used for data persistence here
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global variables provided by Canvas environment
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+
+        let app;
+        let db;
+        let auth;
+        let userId;
+
+        // Initialize Firebase and authenticate user
+        async function initializeFirebase() {
+            try {
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+                userId = auth.currentUser?.uid || crypto.randomUUID();
+                console.log("Firebase initialized. User ID:", userId);
+
+                // Start listening to history after Firebase is ready
+                setupHistoryListener();
+
+            } catch (error) {
+                console.error("Error initializing Firebase or signing in:", error);
+            }
+        }
+
+        // Call Firebase initialization on window load
+        window.onload = initializeFirebase;
+
+        // Get references to HTML elements, with fallback for robustness
+        const namaInput = document.getElementById('nama') || { value: '' };
+        const usiaInput = document.getElementById('usia') || { value: '' };
+        const jenisKelaminSelect = document.getElementById('jenisKelamin') || { value: '' };
+        const keperluanSelect = document.getElementById('keperluan') || { value: '' };
+
+        // Keychain Front elements
+        const bentukSelect = document.getElementById('bentuk') || { value: '' };
+        const materialSelect = document.getElementById('material') || { value: '' }; // NEW: Material Select
+        const temaSelect = document.getElementById('tema') || { value: '' };
+        const warnaSelect = document.getElementById('warnaSelect') || { value: '' };
+        const elemenGrafisSelect = document.getElementById('elemenGrafisSelect') || { options: [] };
+        const teksInput = document.getElementById('teks') || { value: '' };
+        const fontSelect = document.getElementById('fontSelect') || { value: '' };
+        const efekSelect = document.getElementById('efek') || { value: '' };
+        const suasanaSelect = document.getElementById('suasana') || { value: '' };
+
+        // Keychain Back elements
+        const temaBelakangSelect = document.getElementById('temaBelakang') || { value: '' };
+        const warnaBelakangSelect = document.getElementById('warnaBelakangSelect') || { value: '' };
+        const elemenGrafisBelakangSelect = document.getElementById('elemenGrafisBelakangSelect') || { options: [] };
+        const teksBelakangInput = document.getElementById('teksBelakang') || { value: '' };
+        const fontBelakangSelect = document.getElementById('fontBelakangSelect') || null; // Changed to null for explicit check
+        const efekBelakangSelect = document.getElementById('efekBelakangSelect') || null; // Changed to null for explicit check
+
+
+        // Packaging Front elements
+        const bentukKemasanSelect = document.getElementById('bentukKemasan') || { value: '' };
+        const temaKemasanSelect = document.getElementById('temaKemasan') || { value: '' };
+        const warnaKemasanSelect = document.getElementById('warnaKemasanSelect') || { value: '' };
+        const elemenGrafisKemasanSelect = document.getElementById('elemenGrafisKemasanSelect') || { options: [] };
+        const teksKemasanInput = document.getElementById('teksKemasan') || { value: '' };
+        const ukuranKemasanInput = document.getElementById('ukuranKemasan') || { value: '' };
+
+        // Packaging Back elements
+        const warnaKemasanBelakangSelect = document.getElementById('warnaKemasanBelakangSelect') || { value: '' };
+        const elemenGrafisKemasanBelakangSelect = document.getElementById('elemenGrafisKemasanBelakangSelect') || { options: [] };
+        const teksKemasanBelakangInput = document.getElementById('teksKemasanBelakang') || { value: '' };
+
+
+        const generatePromptBtn = document.getElementById('generatePromptBtn');
+        const generatedPromptTextarea = document.getElementById('generatedPrompt');
+        const copyPromptBtn = document.getElementById('copyPromptBtn');
+        const translatePromptBtn = document.getElementById('translatePromptBtn');
+        const translateButtonText = document.getElementById('translateButtonText');
+        const translateLoadingSpinner = document.getElementById('translateLoadingSpinner');
+        const copyMessage = document.getElementById('copyMessage');
+        const translateMessage = document.getElementById('translateMessage');
+
+        // Image Preview elements
+        const generateImageBtn = document.getElementById('generateImageBtn');
+        const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+        const imagePreviewMessage = document.getElementById('imagePreviewMessage');
+        const generatedImage = document.getElementById('generatedImage');
+        const imageLoadingSpinner = document.getElementById('imageLoadingSpinner');
+
+        // History elements
+        const savePromptBtn = document.getElementById('savePromptBtn');
+        const saveMessage = document.getElementById('saveMessage');
+        const historyList = document.getElementById('historyList');
+        const historyModal = document.getElementById('historyModal');
+        const closeHistoryModalBtn = document.getElementById('closeHistoryModal');
+        const modalHistoryList = document.getElementById('modalHistoryList');
+
+
+        let currentIndonesianPrompt = "";
+        let isEnglishDisplayed = false;
+
+        // Function to get all selected options from a multi-select
+        function getSelectedValues(selectElement) {
+            const selected = [];
+            // Ensure selectElement is not null and has options
+            if (selectElement && selectElement.options) {
+                for (let i = 0; i < selectElement.options.length; i++) {
+                    if (selectElement.options[i].selected) {
+                        selected.push(selectElement.options[i].value);
+                    }
+                }
+            }
+            return selected;
+        }
+
+        // Function to set selected options in a multi-select
+        function setSelectedValues(selectElement, values) {
+            // Ensure selectElement is not null and has options
+            if (selectElement && selectElement.options) {
+                // Clear existing selections first
+                for (let i = 0; i < selectElement.options.length; i++) {
+                    selectElement.options[i].selected = false;
+                }
+                // Set new selections
+                for (let i = 0; i < selectElement.options.length; i++) {
+                    if (values.includes(selectElement.options[i].value)) {
+                        selectElement.options[i].selected = true;
+                    }
+                }
+            }
+        }
+
+        // Function to generate the prompt (always in Indonesian first)
+        function generatePrompt() {
+            // General Inputs
+            const nama = namaInput.value.trim();
+            const usia = parseInt(usiaInput.value.trim());
+            const jenisKelamin = jenisKelaminSelect.value;
+            const keperluan = keperluanSelect.value;
+            
+            // Keychain Front Design Inputs
+            const bentuk = bentukSelect.value;
+            const material = materialSelect.value; // NEW: Material
+            const tema = temaSelect.value;
+            let warna = warnaSelect.value;
+            let elemenGrafis = getSelectedValues(elemenGrafisSelect).join(', ');
+            let teks = teksInput.value.trim();
+            const font = fontSelect.value;
+            const efek = efekSelect.value;
+            let suasana = suasanaSelect.value;
+
+            // Keychain Back Design Inputs
+            const temaBelakang = temaBelakangSelect.value;
+            let warnaBelakang = warnaBelakangSelect.value;
+            let elemenGrafisBelakang = getSelectedValues(elemenGrafisBelakangSelect).join(', ');
+            let teksBelakang = teksBelakangInput.value.trim();
+            const fontBelakang = fontBelakangSelect ? fontBelakangSelect.value : ''; // Check if element exists
+            const efekBelakang = efekBelakangSelect ? efekBelakangSelect.value : ''; // Check if element exists
+
+
+            // Packaging Front Design Inputs
+            const bentukKemasan = bentukKemasanSelect.value;
+            const temaKemasan = temaKemasanSelect.value;
+            let warnaKemasan = warnaKemasanSelect.value;
+            let elemenGrafisKemasan = getSelectedValues(elemenGrafisKemasanSelect).join(', ');
+            let teksKemasan = teksKemasanInput.value.trim();
+            const ukuranKemasan = ukuranKemasanInput.value.trim();
+
+            // Packaging Back Design Inputs
+            let warnaKemasanBelakang = warnaKemasanBelakangSelect.value;
+            let elemenGrafisKemasanBelakang = getSelectedValues(elemenGrafisKemasanBelakangSelect).join(', ');
+            let teksKemasanBelakang = teksKemasanBelakangInput.value.trim();
+
+
+            // Store current values for comparison (to avoid overwriting user input)
+            const currentWarna = warnaSelect.value;
+            const currentElemenGrafis = getSelectedValues(elemenGrafisSelect);
+            const currentTeks = teksInput.value.trim();
+            const currentSuasana = suasanaSelect.value;
+
+            const currentTemaBelakang = temaBelakangSelect.value;
+            const currentWarnaBelakang = warnaBelakangSelect.value;
+            const currentElemenGrafisBelakang = getSelectedValues(elemenGrafisBelakangSelect);
+            const currentTeksBelakang = teksBelakangInput.value.trim();
+            const currentFontBelakang = fontBelakangSelect ? fontBelakangSelect.value : '';
+            const currentEfekBelakang = efekBelakangSelect ? efekBelakangSelect.value : '';
+
+
+            const currentWarnaKemasan = warnaKemasanSelect.value;
+            const currentElemenGrafisKemasan = getSelectedValues(elemenGrafisKemasanSelect);
+            const currentTeksKemasan = teksKemasanInput.value.trim();
+
+            const currentWarnaKemasanBelakang = warnaKemasanBelakangSelect.value;
+            const currentElemenGrafisKemasanBelakang = getSelectedValues(elemenGrafisKemasanBelakangSelect);
+            const currentTeksKemasanBelakang = teksKemasanBelakangInput.value.trim();
+
+
+            let stylisticModifier = '';
+            let baseSuggestedWarna = '';
+            let baseSuggestedElemenGrafis = [];
+            let baseSuggestedTeks = '';
+            let baseSuggestedSuasana = '';
+
+            // --- 1. Determine base stylistic modifier and general suggestions based on age and gender ---
+            if (!isNaN(usia) && usia > 0) {
+                if (usia >= 1 && usia <= 6) {
+                    stylisticModifier = 'Gaya ilustrasi sangat ramah anak-anak, dengan karakter kartun yang sangat lucu dan warna-warna primer cerah.';
+                    baseSuggestedWarna = 'merah, kuning, biru, hijau cerah';
+                    baseSuggestedElemenGrafis = ['hewan kartun', 'mainan', 'bintang', 'bentuk sederhana'];
+                    baseSuggestedSuasana = 'ceria dan playful';
+                    baseSuggestedTeks = 'Nama anak, angka usia, kata-kata sederhana dan lucu';
+                } else if (usia >= 7 && usia <= 12) {
+                    stylisticModifier = 'Gaya ilustrasi ramah anak-anak, dengan karakter yang lucu dan warna-warna cerah.';
+                    baseSuggestedWarna = 'warna-warna cerah, pastel';
+                    baseSuggestedElemenGrafis = ['karakter favorit', 'simbol hobi anak-anak', 'bintang', 'awan'];
+                    baseSuggestedSuasana = 'ceria dan bersemangat';
+                    baseSuggestedTeks = 'Nama, kutipan singkat, hobi';
+                } else if (usia >= 13 && usia <= 18) {
+                    stylisticModifier = 'Gaya visual modern dan trendi, cocok untuk remaja.';
+                    baseSuggestedWarna = 'warna-warna solid, neon, gradasi, monokrom';
+                    baseSuggestedElemenGrafis = ['simbol musik', 'game', 'media sosial', 'abstrak', 'geometris'];
+                    baseSuggestedSuasana = 'keren dan dinamis';
+                    baseSuggestedTeks = 'Slogan motivasi, kutipan inspiratif, inisial';
+                } else if (usia > 18) {
+                    stylisticModifier = 'Desain elegan dan minimalis, cocok untuk dewasa.';
+                    baseSuggestedWarna = 'warna-warna muted, earthy, metalik, netral, palet sofistikated';
+                    baseSuggestedElemenGrafis = ['abstrak', 'floral', 'geometris', 'siluet', 'logo minimalis', 'kutipan elegan'];
+                    baseSuggestedSuasana = 'tenang, elegan, profesional';
+                    baseSuggestedTeks = 'Nama lengkap, kutipan bijak, inisial, tanggal penting';
+                }
+            }
+
+            // Refine stylistic modifier and base suggestions based on gender if provided
+            if (jenisKelamin === 'perempuan') {
+                stylisticModifier += (stylisticModifier ? ' Ditambah sentuhan feminin, ' : 'Gaya ilustrasi feminin, ') + 'dengan detail yang anggun.';
+                if (!baseSuggestedWarna.includes('pink')) baseSuggestedWarna += (baseSuggestedWarna ? ', ' : '') + 'pink, ungu muda, emas';
+                if (currentElemenGrafis.length === 0 || (currentElemenGrafis.length === 1 && currentElemenGrafis[0] === '')) {
+                    if (!isNaN(usia) && usia >= 1 && usia <= 12) {
+                        baseSuggestedElemenGrafis = ['karakter anak perempuan berhijab', 'karakter anak perempuan muslimah'];
+                    } else if (!isNaN(usia) && usia > 12) {
+                        baseSuggestedElemenGrafis = ['karakter perempuan berhijab', 'karakter wanita muslimah'];
+                    }
+                }
+            } else if (jenisKelamin === 'laki-laki') {
+                stylisticModifier += (stylisticModifier ? ' Ditambah sentuhan maskulin, ' : 'Gaya ilustrasi maskulin, ') + 'dengan detail yang kuat.';
+                if (!baseSuggestedWarna.includes('biru')) baseSuggestedWarna += (baseSuggestedWarna ? ', ' : '') + 'biru, hijau tua, abu-abu, silver';
+                if (currentElemenGrafis.length === 0 || (currentElemenGrafis.length === 1 && currentElemenGrafis[0] === '')) {
+                    if (!isNaN(usia) && usia >= 1 && usia <= 12) {
+                        baseSuggestedElemenGrafis = ['karakter anak laki-laki berpeci', 'karakter anak laki-laki muslim'];
+                    } else if (!isNaN(usia) && usia > 12) {
+                        baseSuggestedElemenGrafis = ['karakter laki-laki berpeci', 'karakter pria muslim'];
+                    }
+                }
+            }
+
+            // --- 2. Apply suggestions based on Keperluan (Purpose) ---
+            let purposeSuggestedWarna = '';
+            let purposeSuggestedElemenGrafis = [];
+            let purposeSuggestedTeks = '';
+            let purposeSuggestedSuasana = '';
+
+            if (keperluan === 'ulang tahun') {
+                purposeSuggestedElemenGrafis = ['kue ulang tahun', 'lilin', 'balon', 'kado', 'konfeti'];
+                purposeSuggestedTeks = nama ? `Selamat Ulang Tahun, ${nama}!` : 'Selamat Ulang Tahun!';
+                purposeSuggestedWarna = 'warna cerah ceria';
+                purposeSuggestedSuasana = 'ceria dan meriah';
+            } else if (keperluan === 'hadiah') {
+                purposeSuggestedTeks = nama ? `Untuk ${nama}, dengan cinta.` : 'Terima Kasih!';
+                purposeSuggestedWarna = 'warna hangat, netral, atau sesuai selera umum';
+                purposeSuggestedElemenGrafis = ['hati', 'bunga', 'simbol persahabatan'];
+                purposeSuggestedSuasana = 'hangat dan penuh kasih';
+            } else if (keperluan === 'pribadi') {
+                purposeSuggestedTeks = nama ? `Ini Milik ${nama}` : 'My Own Style';
+                purposeSuggestedWarna = 'warna favorit, sesuai kepribadian';
+                purposeSuggestedElemenGrafis = ['simbol hobi', 'inisial nama', 'kutipan personal'];
+                purposeSuggestedSuasana = 'personal dan unik';
+            } else if (keperluan === 'promosi') {
+                purposeSuggestedTeks = 'Nama Perusahaan/Slogan';
+                purposeSuggestedWarna = 'warna brand, profesional';
+                purposeSuggestedElemenGrafis = ['logo perusahaan', 'ikon relevan bisnis'];
+                purposeSuggestedSuasana = 'profesional dan menarik';
+            } else if (keperluan === 'acara khusus') {
+                purposeSuggestedTeks = 'Nama Acara / Tanggal';
+                purposeSuggestedWarna = 'warna tema acara';
+                purposeSuggestedElemenGrafis = ['simbol acara (misal: cincin untuk pernikahan, toga untuk wisuda)'];
+                purposeSuggestedSuasana = 'resmi dan berkesan';
+            } else if (keperluan === 'koleksi') {
+                purposeSuggestedTeks = 'Nama Koleksi / Item #';
+                purposeSuggestedWarna = 'sesuai tema koleksi';
+                purposeSuggestedElemenGrafis = ['ilustrasi detail', 'gaya artistik'];
+                purposeSuggestedSuasana = 'artistik dan detail';
+            }
+
+            // --- 3. Apply suggestions based on Tema (Theme) ---
+            let themeSuggestedWarna = '';
+            let themeSuggestedElemenGrafis = [];
+            let themeSuggestedTeks = '';
+            let themeSuggestedSuasana = '';
+
+            if (tema === 'ulang tahun') {
+                themeSuggestedElemenGrafis = ['kue ulang tahun', 'lilin', 'balon', 'kado', 'konfeti'];
+                themeSuggestedTeks = nama ? `Selamat Ulang Tahun, ${nama}!` : 'Selamat Ulang Tahun!';
+                themeSuggestedWarna = 'warna cerah ceria';
+                themeSuggestedSuasana = 'ceria dan meriah';
+            } else if (tema === 'hobi') {
+                themeSuggestedElemenGrafis = ['ikon alat musik', 'alat olahraga', 'buku', 'kamera', 'kuas lukis'];
+                themeSuggestedWarna = 'sesuai hobi';
+                themeSuggestedTeks = 'Nama hobi, kutipan terkait hobi';
+                themeSuggestedSuasana = 'bersemangat dan personal';
+            } else if (tema === 'profesi') {
+                themeSuggestedElemenGrafis = ['ikon stetoskop', 'laptop', 'palu', 'buku', 'alat masak'];
+                themeSuggestedWarna = 'warna profesional';
+                themeSuggestedTeks = 'Nama profesi, slogan';
+                themeSuggestedSuasana = 'profesional dan berdedikasi';
+            } else if (tema === 'alam') {
+                themeSuggestedElemenGrafis = ['pohon', 'gunung', 'pantai', 'awan', 'bunga', 'daun'];
+                themeSuggestedWarna = 'hijau, biru, coklat, warna alami';
+                themeSuggestedTeks = 'Kutipan tentang alam, nama tempat';
+                themeSuggestedSuasana = 'tenang dan damai';
+            } else if (tema === 'hewan') {
+                themeSuggestedElemenGrafis = ['ilustrasi hewan peliharaan (kucing, anjing, burung)', 'jejak kaki', 'tulang', 'ikan'];
+                themeSuggestedWarna = 'warna lembut, natural';
+                themeSuggestedTeks = 'Nama hewan, kutipan lucu tentang hewan';
+                themeSuggestedSuasana = 'lucu dan menggemaskan';
+            } else if (tema === 'abstrak') {
+                themeSuggestedElemenGrafis = ['bentuk geometris', 'garis acak', 'gradasi warna', 'pola organik'];
+                themeSuggestedWarna = 'palet kontras, monokrom, warna-warni';
+                themeSuggestedTeks = 'tanpa teks atau teks minimalis';
+                themeSuggestedSuasana = 'modern, artistik, dinamis';
+            } else if (tema === 'geometris') {
+                themeSuggestedElemenGrafis = ['segitiga', 'lingkaran', 'persegi', 'heksagon', 'pola kubus'];
+                themeSuggestedWarna = 'warna solid, palet terbatas, hitam putih';
+                themeSuggestedTeks = 'tanpa teks atau teks dengan font sans-serif tebal';
+                themeSuggestedSuasana = 'minimalis, terstruktur, modern';
+            }
+
+
+            // --- 4. Combine suggestions for Keychain Front Design ---
+            if (currentWarna === '' || currentWarna === 'Pilih Warna') {
+                warnaSelect.value = themeSuggestedWarna || purposeSuggestedWarna || baseSuggestedWarna;
+            }
+            if (currentElemenGrafis.length === 0 || (currentElemenGrafis.length === 1 && currentElemenGrafis[0] === '')) {
+                const finalSuggestedElemenGrafis = themeSuggestedElemenGrafis.length > 0 ? themeSuggestedElemenGrafis :
+                                                  (purposeSuggestedElemenGrafis.length > 0 ? purposeSuggestedElemenGrafis : baseSuggestedElemenGrafis);
+                setSelectedValues(elemenGrafisSelect, finalSuggestedElemenGrafis);
+            }
+            if (!currentTeks) {
+                teksInput.value = themeSuggestedTeks || purposeSuggestedTeks || baseSuggestedTeks;
+            }
+            if (!currentSuasana || (currentSuasana === 'tenang' && (themeSuggestedSuasana || purposeSuggestedSuasana || baseSuggestedSuasana) !== 'tenang')) {
+                suasanaSelect.value = themeSuggestedSuasana || purposeSuggestedSuasana || baseSuggestedSuasana;
+            }
+
+            // Ensure variables reflect the final selected values for prompt construction
+            warna = warnaSelect.value;
+            elemenGrafis = getSelectedValues(elemenGrafisSelect).join(', ');
+            teks = teksInput.value.trim();
+            suasana = suasanaSelect.value;
+
+
+            // --- Keychain Back Design Suggestions ---
+            let suggestedWarnaBelakang = '';
+            let suggestedElemenGrafisBelakang = [];
+            let suggestedTeksBelakang = '';
+            let suggestedTemaBelakang = '';
+            let suggestedFontBelakang = '';
+            let suggestedEfekBelakang = '';
+
+            // Default to matching front or simpler if not specified
+            if (currentWarnaBelakang === '' || currentWarnaBelakang === 'Sesuai Sisi Depan') {
+                suggestedWarnaBelakang = warna || 'sesuai sisi depan'; // Match front color
+            } else {
+                suggestedWarnaBelakang = currentWarnaBelakang;
+            }
+
+            if (currentElemenGrafisBelakang.length === 0 || (currentElemenGrafisBelakang.length === 1 && currentElemenGrafisBelakang[0] === '')) {
+                if (keperluan === 'promosi' || temaBelakang === 'informasi kontak') {
+                    suggestedElemenGrafisBelakang = ['ikon telepon', 'ikon email', 'ikon website', 'ikon media sosial', 'kode QR'];
+                    suggestedTeksBelakang = 'Kunjungi website kami: [URL], Hubungi: [Email/Telp], Temukan kami di media sosial: [Sosmed]';
+                } else if (keperluan === 'hadiah' || keperluan === 'pribadi' || keperluan === 'ulang tahun' || temaBelakang === 'pesan tambahan') {
+                    suggestedElemenGrafisBelakang = ['terima kasih', 'pola latar belakang minimalis'];
+                    suggestedTeksBelakang = 'Terima kasih telah berbelanja! Semoga harimu menyenangkan.';
+                } else if (temaBelakang === 'pola') {
+                    suggestedElemenGrafisBelakang = ['pola minimalis', 'tekstur', 'garis sederhana'];
+                } else if (temaBelakang === 'teks saja') {
+                    suggestedElemenGrafisBelakang = ['slogan brand', 'kutipan singkat', 'tanggal penting', 'inisial'];
+                } else { // Fallback to complementary elements
+                    suggestedElemenGrafisBelakang = ['elemen pelengkap desain depan', 'pola latar belakang minimalis'];
+                    suggestedTeksBelakang = 'Terima kasih atas dukungan Anda!';
+                }
+            } else {
+                suggestedElemenGrafisBelakang = currentElemenGrafisBelakang;
+            }
+
+            if (!currentTeksBelakang) {
+                teksBelakangInput.value = suggestedTeksBelakang;
+            }
+
+            if (currentTemaBelakang === '' || currentTemaBelakang === 'Sesuai Sisi Depan') {
+                suggestedTemaBelakang = tema || 'minimalis'; // Match front theme or default
+            } else {
+                suggestedTemaBelakang = currentTemaBelakang;
+            }
+
+            if (currentFontBelakang === '' || currentFontBelakang === 'Sesuai Sisi Depan') {
+                suggestedFontBelakang = font || 'sans-serif'; // Match front font or default
+            } else {
+                suggestedFontBelakang = currentFontBelakang;
+            }
+
+            if (currentEfekBelakang === '' || currentEfekBelakang === 'Sesuai Sisi Depan') {
+                suggestedEfekBelakang = efek || 'matte'; // Match front effect or default
+            } else {
+                suggestedEfekBelakang = currentEfekBelakang;
+            }
+
+
+            // Ensure keychain back variables reflect final selected values
+            warnaBelakang = warnaBelakangSelect.value;
+            elemenGrafisBelakang = getSelectedValues(elemenGrafisBelakangSelect).join(', ');
+            teksBelakang = teksBelakangInput.value.trim();
+            if (temaBelakangSelect) temaBelakangSelect.value = suggestedTemaBelakang; // Set the actual select value
+            if (fontBelakangSelect) fontBelakangSelect.value = suggestedFontBelakang;
+            if (efekBelakangSelect) efekBelakangSelect.value = suggestedEfekBelakang;
+
+
+            // --- Packaging Front Design Suggestions (based on keychain design) ---
+            let suggestedWarnaKemasan = '';
+            let suggestedElemenGrafisKemasan = [];
+            let suggestedTeksKemasan = '';
+            let suggestedTemaKemasan = '';
+
+            // Default packaging suggestions based on overall context
+            if (keperluan === 'ulang tahun') {
+                suggestedWarnaKemasan = 'warna cerah ceria, sesuai gantungan kunci';
+                suggestedElemenGrafisKemasan = ['ikon ulang tahun', 'konfeti', 'elemen desain gantungan kunci'];
+                suggestedTeksKemasan = nama ? `Selamat Ulang Tahun, ${nama}!` : 'Selamat Ulang Tahun!';
+                suggestedTemaKemasan = 'ceria';
+            } else if (keperluan === 'hadiah') {
+                suggestedWarnaKemasan = 'warna lembut, sesuai gantungan kunci';
+                suggestedElemenGrafisKemasan = ['ikon hadiah', 'pita', 'elemen desain gantungan kunci'];
+                suggestedTeksKemasan = nama ? `Dari: [Pengirim], Untuk: ${nama}` : 'Hadiah Spesial Untukmu!';
+                suggestedTemaKemasan = 'elegan';
+            } else if (keperluan === 'pribadi') {
+                suggestedWarnaKemasan = 'sesuai gantungan kunci, warna favorit';
+                suggestedElemenGrafisKemasan = ['pola abstrak', 'logo brand (placeholder)', 'elemen desain gantungan kunci'];
+                suggestedTeksKemasan = nama ? `Ini Milik ${nama}` : 'My Personal Style';
+                suggestedTemaKemasan = 'minimalis';
+            } else if (keperluan === 'promosi') {
+                suggestedWarnaKemasan = 'warna brand, profesional';
+                suggestedElemenGrafisKemasan = ['logo brand', 'informasi kontak', 'elemen desain gantungan kunci'];
+                suggestedTeksKemasan = 'Nama Perusahaan, Slogan, Website';
+                suggestedTemaKemasan = 'profesional';
+            } else if (keperluan === 'acara khusus') {
+                suggestedWarnaKemasan = 'warna tema acara';
+                suggestedElemenGrafisKemasan = ['simbol acara', 'elemen desain gantungan kunci'];
+                suggestedTeksKemasan = 'Nama Acara, Tanggal, Nama Penerima';
+                suggestedTemaKemasan = 'resmi';
+            } else if (keperluan === 'koleksi') {
+                suggestedWarnaKemasan = 'sesuai tema koleksi, artistik';
+                suggestedElemenGrafisKemasan = ['ilustrasi detail', 'gaya artistik', 'elemen desain gantungan kunci'];
+                suggestedTeksKemasan = 'Nama Koleksi, Nomor Seri';
+                suggestedTemaKemasan = 'artistik';
+            } else { // Fallback if no specific purpose
+                suggestedWarnaKemasan = warna || 'sesuai gantungan kunci';
+                suggestedElemenGrafisKemasan = ['elemen desain gantungan kunci', 'pola simpel'];
+                suggestedTeksKemasan = nama ? `Untuk ${nama}` : 'Terima Kasih!';
+                suggestedTemaKemasan = tema || 'minimalis';
+            }
+
+            // Apply packaging front suggestions if fields are empty or default
+            if (currentWarnaKemasan === '' || currentWarnaKemasan === 'Sesuai Gantungan Kunci') {
+                warnaKemasanSelect.value = suggestedWarnaKemasan;
+            }
+            if (currentElemenGrafisKemasan.length === 0 || (currentElemenGrafisKemasan.length === 1 && currentElemenGrafisKemasan[0] === '')) {
+                setSelectedValues(elemenGrafisKemasanSelect, suggestedElemenGrafisKemasan);
+            }
+            if (!currentTeksKemasan) {
+                teksKemasanInput.value = suggestedTeksKemasan;
+            }
+            if (temaKemasanSelect.value === '' || temaKemasanSelect.value === 'Sesuai Gantungan Kunci') {
+                temaKemasanSelect.value = suggestedTemaKemasan;
+            }
+
+            // Ensure packaging variables reflect final selected values
+            warnaKemasan = warnaKemasanSelect.value;
+            elemenGrafisKemasan = getSelectedValues(elemenGrafisKemasanSelect).join(', ');
+            teksKemasan = teksKemasanInput.value.trim();
+
+
+            // --- Packaging Back Design Suggestions ---
+            let suggestedWarnaKemasanBelakang = '';
+            let suggestedElemenGrafisKemasanBelakang = [];
+            let suggestedTeksKemasanBelakang = '';
+
+            // Default to matching front or simpler if not specified
+            if (currentWarnaKemasanBelakang === '' || currentWarnaKemasanBelakang === 'Sesuai Sisi Depan') {
+                suggestedWarnaKemasanBelakang = warnaKemasan || 'sesuai sisi depan'; // Match front color
+            } else {
+                suggestedWarnaKemasanBelakang = currentWarnaKemasanBelakang;
+            }
+
+            if (currentElemenGrafisKemasanBelakang.length === 0 || (currentElemenGrafisKemasanBelakang.length === 1 && currentElemenGrafisKemasanBelakang[0] === '')) {
+                if (keperluan === 'promosi') {
+                    suggestedElemenGrafisKemasanBelakang = ['ikon telepon', 'ikon email', 'ikon website', 'ikon media sosial', 'kode QR'];
+                    suggestedTeksKemasanBelakang = 'Kunjungi website kami: [URL], Hubungi: [Email/Telp], Temukan kami di media sosial: [Sosmed]';
+                } else if (keperluan === 'hadiah' || keperluan === 'pribadi' || keperluan === 'ulang tahun') {
+                    suggestedElemenGrafisKemasanBelakang = ['terima kasih', 'pola latar belakang minimalis'];
+                    suggestedTeksKemasanBelakang = 'Terima kasih telah berbelanja! Semoga harimu menyenangkan.';
+                } else {
+                    suggestedElemenGrafisKemasanBelakang = ['pola latar belakang minimalis', 'elemen kecil sesuai tema'];
+                    suggestedTeksKemasanBelakang = 'Terima kasih atas dukungan Anda!';
+                }
+            } else {
+                suggestedElemenGrafisKemasanBelakang = currentElemenGrafisKemasanBelakang;
+            }
+
+            if (!currentTeksKemasanBelakang) {
+                teksKemasanBelakangInput.value = suggestedTeksKemasanBelakang;
+            }
+
+            // Ensure packaging back variables reflect final selected values
+            warnaKemasanBelakang = warnaKemasanBelakangSelect.value;
+            elemenGrafisKemasanBelakang = getSelectedValues(elemenGrafisKemasanBelakangSelect).join(', ');
+            teksKemasanBelakang = teksKemasanBelakangInput.value.trim();
+
+
+            // --- Final prompt construction ---
+            let keychainFrontPrompt = `Buat desain ilustrasi untuk gantungan kunci ${bentuk} berbahan ${material} (Sisi Depan). `;
+            keychainFrontPrompt += `Fokus hanya pada ilustrasi desain utama. **Jangan sertakan** ring gantungan kunci, rantai, atau bagian fisik gantungan kunci lainnya. Pastikan latar belakang polos atau minimalis untuk menonjolkan desain. `;
+            keychainFrontPrompt += `Dengan tema ${tema}. `;
+            if (stylisticModifier) {
+                keychainFrontPrompt += `${stylisticModifier.trim()} `;
+            }
+            keychainFrontPrompt += `Warna dominan ${warna || 'sesuai tema'}. Sertakan ${elemenGrafis || 'elemen grafis yang relevan'} dan teks '${teks || 'teks motivasi'}' dengan font ${font}. `;
+            keychainFrontPrompt += `Tambahkan efek ${efek} untuk memberikan suasana ${suasana}.`;
+
+            let keychainBackPrompt = `Buat desain ilustrasi untuk gantungan kunci ${bentuk} berbahan ${material} (Sisi Belakang). `;
+            keychainBackPrompt += `Fokus hanya pada ilustrasi desain utama. **Jangan sertakan** ring gantungan kunci, rantai, atau bagian fisik gantungan kunci lainnya. Pastikan latar belakang polos atau minimalis untuk menonjolkan desain. `;
+            keychainBackPrompt += `Tema/gaya ${temaBelakang || 'sesuai sisi depan'}. `;
+            keychainBackPrompt += `Warna dominan ${warnaBelakang || 'sesuai sisi depan'}. `;
+            keychainBackPrompt += `Sertakan elemen grafis ${elemenGrafisBelakang || 'sesuai sisi depan'}. `;
+            keychainBackPrompt += `Teks pada sisi belakang: '${teksBelakang || 'tanpa teks'}' dengan font ${fontBelakang || 'sesuai sisi depan'}. `;
+            keychainBackPrompt += `Efek tambahan ${efekBelakang || 'sesuai sisi depan'}.`;
+
+
+            let packagingFrontPrompt = `Buat desain kemasan kartu untuk gantungan kunci ini (Sisi Depan). `;
+            packagingFrontPrompt += `Bentuk kemasan ${bentukKemasan}. `;
+            packagingFrontPrompt += `Tema kemasan ${temaKemasan || 'sesuai gantungan kunci'}. `;
+            packagingFrontPrompt += `Warna dominan kemasan ${warnaKemasan || 'sesuai gantungan kunci'}. `;
+            packagingFrontPrompt += `Sertakan elemen grafis ${elemenGrafisKemasan || 'sesuai gantungan kunci'}. `;
+            packagingFrontPrompt += `Teks pada kemasan: '${teksKemasan || 'terima kasih'}'`;
+            if (ukuranKemasan) {
+                packagingFrontPrompt += `, dengan ukuran ${ukuranKemasan}`;
+            }
+            packagingFrontPrompt += `.`;
+
+            let packagingBackPrompt = `Buat desain kemasan kartu untuk gantungan kunci ini (Sisi Belakang). `;
+            packagingBackPrompt += `Warna dominan kemasan sisi belakang ${warnaKemasanBelakang || 'sesuai sisi depan'}. `;
+            packagingBackPrompt += `Sertakan elemen grafis ${elemenGrafisKemasanBelakang || 'sesuai sisi depan'}. `;
+            packagingBackPrompt += `Teks pada kemasan sisi belakang: '${teksKemasanBelakang || 'terima kasih'}'`;
+            packagingBackPrompt += `.`;
+
+
+            currentIndonesianPrompt = keychainFrontPrompt + "\n\n" + keychainBackPrompt + "\n\n" + packagingFrontPrompt + "\n\n" + packagingBackPrompt; // Combine all for translation
+            generatedPromptTextarea.value = currentIndonesianPrompt; // Display Indonesian by default
+            isEnglishDisplayed = false; // Reset flag to Indonesian
+            translateButtonText.textContent = 'Terjemahkan ke Inggris'; // Reset button text
+        }
+
+        // Function to copy prompt to clipboard
+        function copyPrompt() {
+            generatedPromptTextarea.select();
+            document.execCommand('copy');
+            copyMessage.classList.remove('hidden');
+            setTimeout(() => {
+                copyMessage.classList.add('hidden');
+            }, 2000);
+        }
+
+        // Function to translate prompt using Gemini API
+        async function translatePrompt() {
+            if (isEnglishDisplayed) {
+                // If English is currently displayed, switch back to Indonesian
+                generatedPromptTextarea.value = currentIndonesianPrompt;
+                isEnglishDisplayed = false;
+                translateButtonText.textContent = 'Terjemahkan ke Inggris';
+                translateMessage.classList.add('hidden');
+                return;
+            }
+
+            translateLoadingSpinner.classList.remove('hidden');
+            translateButtonText.textContent = ''; // Hide text
+            translatePromptBtn.disabled = true; // Disable button during translation
+            translateMessage.classList.add('hidden'); // Ensure it's hidden before showing "Menerjemahkan..."
+
+            const promptToTranslate = currentIndonesianPrompt;
+            const chatHistory = [];
+            chatHistory.push({ role: "user", parts: [{ text: `Terjemahkan teks berikut ke Bahasa Inggris:\n\n${promptToTranslate}` }] });
+
+            const payload = { contents: chatHistory };
+            const apiKey = ""; // Canvas will provide this at runtime
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const translatedText = result.candidates[0].content.parts[0].text;
+                    generatedPromptTextarea.value = translatedText;
+                    isEnglishDisplayed = true;
+                    translateButtonText.textContent = 'Tampilkan Bahasa Indonesia';
+                } else {
+                    generatedPromptTextarea.value = "Gagal menerjemahkan. Silakan coba lagi.";
+                    console.error("Translation API response error:", result);
+                }
+            } catch (error) {
+                generatedPromptTextarea.value = "Terjadi kesalahan saat menerjemahkan. Silakan periksa koneksi internet Anda atau coba lagi nanti.";
+                console.error("Translation fetch error:", error);
+            } finally {
+                translateLoadingSpinner.classList.add('hidden');
+                translatePromptBtn.disabled = false;
+                translateMessage.classList.add('hidden');
+            }
+        }
+
+        // Function to generate image from prompt
+        async function generateImage() {
+            const prompt = generatedPromptTextarea.value; // Use the currently displayed prompt (can be Indonesian or English)
+
+            if (!prompt) {
+                imagePreviewMessage.textContent = "Silakan hasilkan prompt terlebih dahulu.";
+                generatedImage.classList.add('hidden');
+                return;
+            }
+
+            imagePreviewMessage.textContent = "Membangkitkan gambar...";
+            generatedImage.classList.add('hidden');
+            imageLoadingSpinner.classList.remove('hidden');
+            generateImageBtn.disabled = true;
+
+            const payload = { instances: { prompt: prompt }, parameters: { "sampleCount": 1} };
+            const apiKey = ""; // Canvas will provide this at runtime
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+
+                if (result.predictions && result.predictions.length > 0 && result.predictions[0].bytesBase64Encoded) {
+                    const imageUrl = `data:image/png;base64,${result.predictions[0].bytesBase64Encoded}`;
+                    generatedImage.src = imageUrl;
+                    generatedImage.classList.remove('hidden');
+                    imagePreviewMessage.textContent = ""; // Clear message on success
+                } else {
+                    imagePreviewMessage.textContent = "Gagal membangkitkan gambar. Coba lagi dengan prompt yang berbeda.";
+                    console.error("Image generation API response error:", result);
+                }
+            } catch (error) {
+                imagePreviewMessage.textContent = "Terjadi kesalahan saat membangkitkan gambar. Silakan periksa koneksi internet Anda atau coba lagi nanti.";
+                console.error("Image generation fetch error:", error);
+            } finally {
+                imageLoadingSpinner.classList.add('hidden');
+                generateImageBtn.disabled = false;
+            }
+        }
+
+        // Function to save prompt to Firestore
+        async function savePrompt() {
+            const promptContent = generatedPromptTextarea.value;
+            if (!promptContent) {
+                saveMessage.textContent = "Tidak ada prompt untuk disimpan.";
+                saveMessage.classList.remove('hidden');
+                saveMessage.classList.remove('text-green-600');
+                saveMessage.classList.add('text-red-600');
+                setTimeout(() => saveMessage.classList.add('hidden'), 2000);
+                return;
+            }
+
+            try {
+                const promptsCollection = collection(db, `artifacts/${appId}/users/${userId}/prompts`);
+                await addDoc(promptsCollection, {
+                    prompt: promptContent,
+                    timestamp: serverTimestamp(),
+                    // Optionally save all input parameters for loading functionality
+                    inputs: {
+                        nama: namaInput.value,
+                        usia: usiaInput.value,
+                        jenisKelamin: jenisKelaminSelect.value,
+                        keperluan: keperluanSelect.value,
+                        bentuk: bentukSelect.value,
+                        material: materialSelect.value,
+                        tema: temaSelect.value,
+                        warna: warnaSelect.value,
+                        elemenGrafis: getSelectedValues(elemenGrafisSelect),
+                        teks: teksInput.value,
+                        font: fontSelect.value,
+                        efek: efekSelect.value,
+                        suasana: suasanaSelect.value,
+                        temaBelakang: temaBelakangSelect.value,
+                        warnaBelakang: warnaBelakangSelect.value,
+                        elemenGrafisBelakang: getSelectedValues(elemenGrafisBelakangSelect),
+                        teksBelakang: teksBelakangInput.value,
+                        fontBelakang: fontBelakangSelect ? fontBelakangSelect.value : '', // Ensure value is accessed safely
+                        efekBelakang: efekBelakangSelect ? efekBelakangSelect.value : '', // Ensure value is accessed safely
+                        bentukKemasan: bentukKemasanSelect.value,
+                        temaKemasan: temaKemasanSelect.value,
+                        warnaKemasan: warnaKemasanSelect.value,
+                        elemenGrafisKemasan: getSelectedValues(elemenGrafisKemasanSelect),
+                        teksKemasan: teksKemasanInput.value,
+                        ukuranKemasan: ukuranKemasanInput.value,
+                        warnaKemasanBelakang: warnaKemasanBelakangSelect.value,
+                        elemenGrafisKemasanBelakang: getSelectedValues(elemenGrafisKemasanBelakangSelect),
+                        teksKemasanBelakang: teksKemasanBelakangInput.value
+                    }
+                });
+                saveMessage.textContent = "Prompt berhasil disimpan!";
+                saveMessage.classList.remove('hidden');
+                saveMessage.classList.remove('text-red-600');
+                saveMessage.classList.add('text-green-600');
+                setTimeout(() => saveMessage.classList.add('hidden'), 2000);
+            } catch (error) {
+                console.error("Error saving prompt:", error);
+                saveMessage.textContent = "Gagal menyimpan prompt. Coba lagi.";
+                saveMessage.classList.remove('hidden');
+                saveMessage.classList.remove('text-green-600');
+                saveMessage.classList.add('text-red-600');
+                setTimeout(() => saveMessage.classList.add('hidden'), 2000);
+            }
+        }
+
+        // Function to load prompt from history
+        function loadPromptFromHistory(promptData) {
+            // Populate all input fields with the saved data
+            namaInput.value = promptData.inputs.nama || '';
+            usiaInput.value = promptData.inputs.usia || '';
+            jenisKelaminSelect.value = promptData.inputs.jenisKelamin || '';
+            keperluanSelect.value = promptData.inputs.keperluan || '';
+
+            bentukSelect.value = promptData.inputs.bentuk || '';
+            materialSelect.value = promptData.inputs.material || ''; // Load material
+            temaSelect.value = promptData.inputs.tema || '';
+            warnaSelect.value = promptData.inputs.warna || '';
+            setSelectedValues(elemenGrafisSelect, promptData.inputs.elemenGrafis || []);
+            teksInput.value = promptData.inputs.teks || '';
+            fontSelect.value = promptData.inputs.font || '';
+            efekSelect.value = promptData.inputs.efek || '';
+            suasanaSelect.value = promptData.inputs.suasana || '';
+
+            temaBelakangSelect.value = promptData.inputs.temaBelakang || '';
+            warnaBelakangSelect.value = promptData.inputs.warnaBelakang || '';
+            setSelectedValues(elemenGrafisBelakangSelect, promptData.inputs.elemenGrafisBelakang || []);
+            teksBelakangInput.value = promptData.inputs.teksBelakang || '';
+            if (fontBelakangSelect) fontBelakangSelect.value = promptData.inputs.fontBelakang || '';
+            if (efekBelakangSelect) efekBelakangSelect.value = promptData.inputs.efekBelakang || '';
+
+            bentukKemasanSelect.value = promptData.inputs.bentukKemasan || '';
+            temaKemasanSelect.value = promptData.inputs.temaKemasan || '';
+            warnaKemasanSelect.value = promptData.inputs.warnaKemasan || '';
+            setSelectedValues(elemenGrafisKemasanSelect, promptData.inputs.elemenGrafisKemasan || []);
+            teksKemasanInput.value = promptData.inputs.teksKemasan || '';
+            ukuranKemasanInput.value = promptData.inputs.ukuranKemasan || '';
+
+            warnaKemasanBelakangSelect.value = promptData.inputs.warnaKemasanBelakang || '';
+            setSelectedValues(elemenGrafisKemasanBelakangSelect, promptData.inputs.elemenGrafisKemasanBelakang || []);
+            teksKemasanBelakangInput.value = promptData.inputs.teksKemasanBelakang || '';
+
+            // Regenerate the prompt based on loaded values
+            generatePrompt();
+            historyModal.classList.add('hidden'); // Close modal after loading
+        }
+
+        // Setup Firestore listener for history
+        function setupHistoryListener() {
+            if (!db || !userId) {
+                console.warn("Firestore or User ID not available for history listener.");
+                return;
+            }
+            const promptsCollectionRef = collection(db, `artifacts/${appId}/users/${userId}/prompts`);
+            const q = query(promptsCollectionRef, orderBy('timestamp', 'desc'));
+
+            onSnapshot(q, (snapshot) => {
+                historyList.innerHTML = ''; // Clear current list
+                modalHistoryList.innerHTML = ''; // Clear modal list
+                if (snapshot.empty) {
+                    historyList.innerHTML = '<p class="text-center text-gray-500">Belum ada prompt yang tersimpan.</p>';
+                    modalHistoryList.innerHTML = '<p class="text-center text-gray-500">Belum ada prompt yang tersimpan.</p>';
+                    return;
+                }
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const timestamp = data.timestamp ? new Date(data.timestamp.toDate()).toLocaleString() : 'Tanggal tidak tersedia';
+
+                    // Create item for main history list (showing only a snippet)
+                    const listItem = document.createElement('div');
+                    listItem.className = 'history-item';
+                    listItem.innerHTML = `
+                        <p class="font-semibold text-gray-800">${data.prompt.substring(0, 100)}...</p>
+                        <p class="history-item-date">${timestamp}</p>
+                    `;
+                    listItem.onclick = () => loadPromptFromHistory(data);
+                    historyList.appendChild(listItem);
+
+                    // Create item for modal history list (showing full prompt)
+                    const modalListItem = document.createElement('div');
+                    modalListItem.className = 'history-item';
+                    modalListItem.innerHTML = `
+                        <p class="font-semibold text-gray-800">${data.prompt}</p>
+                        <p class="history-item-date">${timestamp}</p>
+                    `;
+                    modalListItem.onclick = () => loadPromptFromHistory(data);
+                    modalHistoryList.appendChild(modalListItem);
+                });
+            }, (error) => {
+                console.error("Error fetching history:", error);
+                historyList.innerHTML = '<p class="text-center text-red-500">Gagal memuat riwayat. Coba lagi.</p>';
+                modalHistoryList.innerHTML = '<p class="text-center text-red-500">Gagal memuat riwayat. Coba lagi.</p>';
+            });
+        }
+
+
+        // Event listeners
+        if (generatePromptBtn) generatePromptBtn.addEventListener('click', generatePrompt);
+        if (copyPromptBtn) copyPromptBtn.addEventListener('click', copyPrompt);
+        if (translatePromptBtn) translatePromptBtn.addEventListener('click', translatePrompt);
+        if (generateImageBtn) generateImageBtn.addEventListener('click', generateImage); // New image generation button
+        if (savePromptBtn) savePromptBtn.addEventListener('click', savePrompt); // New save prompt button
+
+        // Event listener to open history modal
+        if (historyList) historyList.addEventListener('click', (event) => {
+            // Only open modal if a history item was clicked (not the "Memuat riwayat..." text)
+            if (event.target.closest('.history-item')) {
+                historyModal.classList.remove('hidden');
+            }
+        });
+        if (closeHistoryModalBtn) closeHistoryModalBtn.addEventListener('click', () => {
+            historyModal.classList.add('hidden');
+        });
+        window.addEventListener('click', (event) => {
+            if (event.target === historyModal) {
+                historyModal.classList.add('hidden');
+            }
+        });
+
+
+        // Generate initial prompt on load
+        generatePrompt();
+
+        // Add event listeners to input fields to update suggestions and prompt
+        if (namaInput) namaInput.addEventListener('input', generatePrompt);
+        if (usiaInput) usiaInput.addEventListener('input', generatePrompt);
+        if (jenisKelaminSelect) jenisKelaminSelect.addEventListener('change', generatePrompt);
+        if (keperluanSelect) keperluanSelect.addEventListener('change', generatePrompt);
+
+        // Keychain Front fields
+        if (bentukSelect) bentukSelect.addEventListener('change', generatePrompt);
+        if (materialSelect) materialSelect.addEventListener('change', generatePrompt); // NEW: Material
+        if (temaSelect) temaSelect.addEventListener('change', generatePrompt);
+        if (warnaSelect) warnaSelect.addEventListener('change', generatePrompt);
+        if (elemenGrafisSelect) elemenGrafisSelect.addEventListener('change', generatePrompt);
+        if (teksInput) teksInput.addEventListener('input', generatePrompt);
+        if (fontSelect) fontSelect.addEventListener('change', generatePrompt);
+        if (efekSelect) efekSelect.addEventListener('change', generatePrompt);
+        if (suasanaSelect) suasanaSelect.addEventListener('change', generatePrompt);
+
+        // Keychain Back fields
+        if (temaBelakangSelect) temaBelakangSelect.addEventListener('change', generatePrompt);
+        if (warnaBelakangSelect) warnaBelakangSelect.addEventListener('change', generatePrompt);
+        if (elemenGrafisBelakangSelect) elemenGrafisBelakangSelect.addEventListener('change', generatePrompt);
+        if (teksBelakangInput) teksBelakangInput.addEventListener('input', generatePrompt);
+        if (fontBelakangSelect) fontBelakangSelect.addEventListener('change', generatePrompt);
+        if (efekBelakangSelect) efekBelakangSelect.addEventListener('change', generatePrompt);
+
+
+        // Packaging Front fields
+        if (bentukKemasanSelect) bentukKemasanSelect.addEventListener('change', generatePrompt);
+        if (temaKemasanSelect) temaKemasanSelect.addEventListener('change', generatePrompt);
+        if (warnaKemasanSelect) warnaKemasanSelect.addEventListener('change', generatePrompt);
+        if (elemenGrafisKemasanSelect) elemenGrafisKemasanSelect.addEventListener('change', generatePrompt);
+        if (teksKemasanInput) teksKemasanInput.addEventListener('input', generatePrompt);
+        if (ukuranKemasanInput) ukuranKemasanInput.addEventListener('input', generatePrompt);
+
+        // Packaging Back fields
+        if (warnaKemasanBelakangSelect) warnaKemasanBelakangSelect.addEventListener('change', generatePrompt);
+        if (elemenGrafisKemasanBelakangSelect) elemenGrafisKemasanBelakangSelect.addEventListener('change', generatePrompt);
+        if (teksKemasanBelakangInput) teksKemasanBelakangInput.addEventListener('input', generatePrompt);
+    </script>
+</body>
+</html>s
